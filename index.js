@@ -1,20 +1,31 @@
 const dotenv = require("dotenv").config()
 const express = require("express")
 const cors = require('cors')
-const app = express()
+const server = express()
 const port = process.env.PORT || 9000
 
 const path = require("path")
 
-app.use(cors())
-app.use(express.json())
+server.use(cors())
+server.use(express.json())
 
-app.use(express.static(path.join(__dirname, "client/build")))
+server.get('/api/users', (req, res, next) =>{
+    res.json({message: 'API is working'})
+})
 
-app.use("/api/", (_, res)=>{
+server.use(express.static(path.join(__dirname, "client/build")))
+
+server.use("*", (req, res)=>{
     res.json({data:"API is accounted for"}) //api used will be put here
 })
 
-app.listen(port, ()=>{
+server.use((err, req, res, next) =>{
+    res.status(500).json({
+        message: err.message,
+        stack: err.stack
+    })
+})
+
+server.listen(port, ()=>{
     console.log('listening on port:', port);
 } )
